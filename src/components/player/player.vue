@@ -1,7 +1,7 @@
 <template>
     <div class="player">
         <div class="normal-player">
-        2017/17/6 22:22
+        2017/17/6 222
         </div>
         <div class="mini-player"></div>
     </div>
