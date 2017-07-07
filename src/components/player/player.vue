@@ -2,7 +2,7 @@
     <div class="player">
         <div class="normal-player">
         </div>
-        <div class="mini-player">15:30</div>
+        <div class="mini-player">20:37</div>
     </div>
 </template>
 <script type="text/ecmascript-6">
