@@ -1,10 +1,10 @@
 <template>
     <div class="player">
         <div class="normal-player">
-          12:55
+          14:44
         </div>
         <div class="mini-player">
-          12:55
+          14:44
         </div>
     </div>
 </template>
