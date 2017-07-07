@@ -1,15 +1,9 @@
 <template>
     <div class="player">
         <div class="normal-player">
-<<<<<<< HEAD
-        </div>
-        <div class="mini-player">
-=======
-          14:44
         </div>
         <div class="mini-player">
           14:44
->>>>>>> 4f21149ffd7d93a0d0893ede819640b321e6a5ab
         </div>
     </div>
 </template>
