@@ -1,6 +1,7 @@
 <template>
     <div class="player">
         <div class="normal-player">
+         2017/7/7 12:42
         </div>
     </div>
 </template>
