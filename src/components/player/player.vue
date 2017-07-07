@@ -1,7 +1,6 @@
 <template>
     <div class="player">
         <div class="normal-player">
-          2:56
         </div>
     </div>
 </template>
