@@ -1,9 +1,9 @@
 <template>
     <div class="player">
         <div class="normal-player">
-        2017/17/6 222
         </div>
-        <div class="mini-player">20:37</div>
+        <div class="mini-player">
+        </div>
     </div>
 </template>
 <script type="text/ecmascript-6">
