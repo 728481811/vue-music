@@ -3,7 +3,7 @@
         <div class="normal-player">
         2017/17/6 222
         </div>
-        <div class="mini-player"></div>
+        <div class="mini-player">15:30</div>
     </div>
 </template>
 <script type="text/ecmascript-6">
