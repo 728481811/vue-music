@@ -12,14 +12,12 @@
             </div>
         </div>
         <div class="filter" ref="filter"></div>
-
     </div>
     <div class="bg-layer" ref="layer">
-        
     </div>
     <scroll :data="songs" class="list" ref="list" :probe-type="probeType" :listen-scroll="listenScroll" @scroll="scroll">
         <div class="song-list-wrapper">
-            <song-list :songs="songs"></song-list>
+            <song-list :songs="songs" @select="selectItem"></song-list>
         </div>
         <div class="loading-container" v-show="!songs.length">
             <loading></loading>
@@ -35,7 +33,6 @@
     import {prefixStyle} from 'common/js/dom'
     import {playlistMixin} from 'common/js/mixin'
     import {mapActions} from 'vuex'
-
     const RESERVED_HEIGHT = 40
     const transform = prefixStyle('transform')
     const backdrop = prefixStyle('backdrop-filter')
@@ -73,12 +70,18 @@
             }
         },
         methods: {
+            selectItem(item,index) {
+                this.selectPlay({list: this.songs,index}) 
+            },
             backSinger() {
                 this.$router.back()
             },
             scroll(pos) {
-                    this.scrollY = pos.y
-            }
+                this.scrollY = pos.y
+            },
+            ...mapActions([
+                'selectPlay'
+                ])
         },
         mounted() {
             // this.imageHeight = this.$refs.bgImage.clientHeiht

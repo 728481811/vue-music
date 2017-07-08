@@ -1,5 +1,5 @@
 <template>
-    <div class="player">
+    <div class="player" v-show="playList.length>0">
         <div class="normal-player">
         </div>
         <div class="mini-player">
@@ -7,8 +7,14 @@
     </div>
 </template>
 <script type="text/ecmascript-6">
+    import {mapGetters} from 'vuex'
     export default{
-
+        computed: {
+            ...mapGetters([
+                'fullScreen',
+                'playList'
+            ])
+        }
     }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -40,7 +46,7 @@
           top: 0
           left: 6px
           z-index: 50
-          .icon-back
+          .icon-back  
             display: block
             padding: 9px
             font-size: $font-size-large-x
@@ -198,7 +204,7 @@
       position: fixed
       left: 0
       bottom: 0
-      z-index: 180
+      z-index: 180    
       width: 100%
       height: 60px
       background: $color-highlight-background
