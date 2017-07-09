@@ -1,26 +1,108 @@
 <template>
     <div class="player" v-show="playList.length>0">
-        <div class="normal-player">
+      <transition name="normal" >
+        <div class="normal-player" @touchstart="touchStart($event)" @touchmove.stop.prevent="touchMove($event)" v-show="fullscreen" ref="normal"> 
+          <div class="background">
+            <img width="100%" height="100%" :src="currentSong.image">
+          </div>
+          <div class="top">
+            <div class="back" @click="back">
+              <i class="icon-back"></i>
+            </div>
+            <h1 class="title" v-html="currentSong.name"></h1>
+            <h2 class="subtitle" v-html="currentSong.singer"></h2>
+          </div>
+          <div class="middle">
+            <div class="middle-l">
+              <div class="cd-wrapper">
+                <div class="cd">
+                  <img class="image" :src="currentSong.image"></img>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="operators">
+              <div class="icon i-left">
+                <i class="icon-sequence"></i>
+              </div>
+              <div class="icon i-left">
+                <i class="icon-prev"></i>
+              </div>
+              <div class="icon i-center">
+                <i class="icon-play"></i>
+              </div>
+              <div class="icon i-right">
+                <i class="icon-next"></i>
+              </div>
+              <div class="icon i-right">
+                <i class="icon icon-not-favorite"></i>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="mini-player">
+      </transition>
+      <transition name="mini">
+        <div class="mini-player" v-show="!fullscreen"  @click="open">
+          <div class="icon">
+            <img width="40" height="40" :src="currentSong.image">
+          </div>
+          <div class="text">
+            <h2 class="name" v-html="currentSong.name"></h2>
+            <p class="desc" v-html="currentSong.singer"></p>
+          </div>
+          <div class="control"></div>
+          <div class="control">
+            <i class="icon-playlist"></i>
+          </div>
         </div>
+      </transition>
     </div>
 </template>
 <script type="text/ecmascript-6">
-    import {mapGetters} from 'vuex'
+    import {mapMutations,mapGetters} from 'vuex'
     export default{
+        data() {
+          return {
+            tStart: 0,
+            tMove: 0
+            
+          }
+        },
         computed: {
             ...mapGetters([
-                'fullScreen',
-                'playList'
+                'fullscreen',
+                'playList',
+                'currentSong'
             ])
-        }
+        },
+        methods: {
+          touchStart(e) {
+            this.tStart = e.touches[0].pageY
+          },
+          touchMove(e) {
+            this.tMove =  e.touches[0].pageY - this.tStart
+            if(this.tMove > 70){
+              this.setFullScreen(false)
+            }             
+          },
+          back() {
+            console.log(1)
+            this.setFullScreen(false)
+          },
+          open() {
+            this.setFullScreen(true)
+          },
+          ...mapMutations({
+          setFullScreen: 'SET_FULL_SCREEN'
+        })
+      },
     }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
-    .player
+  .player
     .normal-player
       position: fixed
       left: 0
@@ -66,7 +148,7 @@
           font-size: $font-size-medium
           color: $color-text
       .middle
-        position: fixed
+        position: relative
         width: 100%
         top: 80px
         bottom: 170px
@@ -188,17 +270,15 @@
             text-align: left
           .icon-favorite
             color: $color-sub-theme
-      &.normal-enter-active, &.normal-leave-active
+      &.normal-enter-active
         transition: all 0.4s
-        .top, .bottom
-          transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
+      &.normal-leave-active
+        transition: all 0.6s
       &.normal-enter, &.normal-leave-to
         opacity: 0
-        .top
-          transform: translate3d(0, -100px, 0)
-        .bottom
-          transform: translate3d(0, 100px, 0)
+        transform: translate3d(0, 1200px, 0)
     .mini-player
+      box-shadow: 0 0 20px #171616
       display: flex
       align-items: center
       position: fixed
@@ -211,7 +291,7 @@
       &.mini-enter-active, &.mini-leave-active
         transition: all 0.4s
       &.mini-enter, &.mini-leave-to
-        opacity: 0
+        transform: translate3d(0, 80px, 0)
       .icon
         flex: 0 0 40px
         width: 40px
@@ -243,8 +323,8 @@
         width: 30px
         padding: 0 10px
         .icon-play-mini, .icon-pause-mini, .icon-playlist
-          font-size: 30px
-          color: $color-theme-d
+          font-size: 25px
+          color: #b62e2c
         .icon-mini
           font-size: 32px
           position: absolute
