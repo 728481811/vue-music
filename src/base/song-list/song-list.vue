@@ -1,7 +1,7 @@
 <template>
     <div class="song-list">
         <ul>
-            <li @click="selectItem(song,index)" v-for="(song,index) in songs" class="item">
+            <li @click="selectItem(song,index)" v-for="(song,index) in songs" class="item" ref="list">
                 <div class="content">
                     <h2 class="name">{{song.name}}</h2>
                     <p class="desc">{{getDesc(song)}}</p>
@@ -19,9 +19,16 @@ export default {
             default: []
         }
     },
-    methods: {
+    methods: {              
         selectItem(item,index) {
             this.$emit('select',item,index)
+            this.$refs.list[index].style.backgroundColor = '#333'
+            setTimeout(() => {
+                this.removeStyle(index)
+            },200)            
+        },
+        removeStyle(index) {
+            this.$refs.list[index].style.backgroundColor = ''
         },
         getDesc(song) {
             return `${song.singer}-${song.album}`
@@ -64,6 +71,7 @@ export default {
                 flex: 1
                 line-height: 20px
                 overflow: hidden
+                padding-left: 30px
                 .name
                     no-wrap()
                     color: $color-text

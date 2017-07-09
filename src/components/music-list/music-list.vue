@@ -220,7 +220,7 @@
             width: 100%
             background: $color-background
             .song-list-wrapper
-                padding: 20px 30px
+                padding-top: 20px
             .loading-container
                 position: absolute
                 width: 100%
