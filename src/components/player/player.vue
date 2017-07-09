@@ -87,7 +87,6 @@
             }             
           },
           back() {
-            console.log(1)
             this.setFullScreen(false)
           },
           open() {
