@@ -1,28 +1,28 @@
 <template>
-    <div class="music-list">
-    <div class="back" @click="backSinger">
-        <i class="icon-back"></i>
-    </div>
-    <div class="bg-image" :style="bgStyle" ref="bgImage">
-        <h1 class="title" v-html="title" ref="title"></h1>
-        <div class="play-wrapper">
-            <div class="play" v-show="songs.length" ref="playButton">
-                <i class="icon-play"></i>
-                <span class="text">随机播放全部</span>
+    <div class="music-list" @touchmove="slideBack" @touchstart="slideStart" @touchend="slideEnd" ref="musicList">
+        <div class="back" @touchend.stop="backSinger">
+            <i class="icon-back"></i>
+        </div>
+        <div class="bg-image" :style="bgStyle" ref="bgImage">
+            <h1 class="title" v-html="title" ref="title"></h1>
+            <div class="play-wrapper">
+                <div class="play" v-show="songs.length" ref="playButton">
+                    <i class="icon-play"></i>
+                    <span class="text">随机播放全部</span>
+                </div>
             </div>
+            <div class="filter" ref="filter"></div>
         </div>
-        <div class="filter" ref="filter"></div>
-    </div>
-    <div class="bg-layer" ref="layer">
-    </div>
-    <scroll :data="songs" class="list" ref="list" :probe-type="probeType" :listen-scroll="listenScroll" @scroll="scroll">
-        <div class="song-list-wrapper">
-            <song-list :songs="songs" @select="selectItem"></song-list>
+        <div class="bg-layer" ref="layer">
         </div>
-        <div class="loading-container" v-show="!songs.length">
-            <loading></loading>
-        </div>
-    </scroll>
+        <scroll :data="songs" class="list" ref="list" :probe-type="probeType" :listen-scroll="listenScroll" @scroll="scroll">
+            <div class="song-list-wrapper">
+                <song-list :songs="songs" @select="selectItem"></song-list>
+            </div>
+            <div class="loading-container" v-show="!songs.length">
+                <loading></loading>
+            </div>
+        </scroll>
     </div>
 </template>
 
@@ -41,10 +41,14 @@
         created() {
             this.probeType = 3
             this.listenScroll = true
+            
         },
         data() {
             return {
-                scrollY: 0
+                scrollY: 0,
+                posStartX: 0,
+                posStartY: 0,
+                moveDistanceX: 0
             }
         },
         components: {
@@ -70,11 +74,43 @@
             }
         },
         methods: {
+            slideStart(e) {
+                this.posStartX = e.touches[0].pageX
+                this.posStartY = e.touches[0].pageY
+
+            },
+            slideEnd() {
+                if(this.moveDistanceX > 100 && this.posStartX < 60) {
+                        this.$router.push('/singer')
+                }else {
+                    this.$refs.musicList.style.transition = 'left 0.3s ease'
+                    this.$refs.musicList.style.left = 0
+                    setTimeout(() => {
+                        this.$refs.musicList.style.transition = ''
+                    },300)
+                }      
+            },
+            slideBack(e) {
+                e.preventDefault()
+                this.moveDistanceX = e.touches[0].pageX - this.posStartX
+                let moveDistanceY = e.touches[0].pageY - this.posStartY
+                if(this.moveDistanceX < 0) {
+                    return 
+                }
+                if(Math.abs(moveDistanceY) > Math.abs(this.moveDistanceX) &&  this.posStartX > 60) {
+                    return
+                }if(this.posStartX < 60){
+                    this.$refs.musicList.style.left = this.moveDistanceX + 'px'
+                }
+                
+                
+                
+            },
             selectItem(item,index) {
                 this.selectPlay({list: this.songs,index}) 
             },
-            backSinger() {
-                this.$router.back()
+            backSinger(e) {
+                this.$router.push('/singer')
             },
             scroll(pos) {
                 this.scrollY = pos.y
