@@ -80,7 +80,7 @@
 
             },
             slideEnd() {
-                if(this.moveDistanceX > 100 && this.posStartX < 60) {
+                if(this.moveDistanceX > 100 && this.posStartX < 100) {
                         this.$router.push('/singer')
                 }else {
                     this.$refs.musicList.style.transition = 'left 0.3s ease'
@@ -91,7 +91,7 @@
                 }      
             },
             slideBack(e) {
-                e.preventDefault()
+                
                 this.moveDistanceX = e.touches[0].pageX - this.posStartX
                 let moveDistanceY = e.touches[0].pageY - this.posStartY
                 if(this.moveDistanceX < 0) {
@@ -99,12 +99,15 @@
                 }
                 if(Math.abs(moveDistanceY) > Math.abs(this.moveDistanceX) &&  this.posStartX > 60) {
                     return
-                }if(this.posStartX < 60){
-                    this.$refs.musicList.style.left = this.moveDistanceX + 'px'
                 }
-                
-                
-                
+                if(this.posStartX < 100){
+                    this.$refs.musicList.style.left = this.moveDistanceX + 'px'
+                    console.log(this.$refs.bgImage.style.height)
+                    if(this.$refs.bgImage.style.height !== '40px'){
+                    this.$refs.bgImage.style.paddingTop = 0
+                    this.$refs.bgImage.style.height = this.imageHeight + 'px'
+                    }
+                }   
             },
             selectItem(item,index) {
                 this.selectPlay({list: this.songs,index}) 
@@ -122,6 +125,7 @@
         mounted() {
             // this.imageHeight = this.$refs.bgImage.clientHeiht
             // this.minTranslateY  = -this.imageHeight + RESERVED_HEIGHT
+
             this.imageHeight = this.$refs.bgImage.clientHeight
             this.minTranslateY = -this.imageHeight + RESERVED_HEIGHT
             this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`
