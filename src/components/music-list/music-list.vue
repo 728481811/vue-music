@@ -8,7 +8,7 @@
             <div class="play-wrapper">
                 <div class="play" v-show="songs.length" ref="playButton">
                     <i class="icon-play"></i>
-                    <span class="text">随机播放全部</span>
+                    <span class="text">随机播放</span>
                 </div>
             </div>
             <div class="filter" ref="filter"></div>
@@ -213,7 +213,7 @@
                 width: 100%
                 .play
                     box-sizing: border-box
-                    width: 135px
+                    width: 100px
                     padding: 7px 0
                     margin: 0 auto
                     text-align: center

@@ -3,6 +3,7 @@
         <ul>
             <li @click="selectItem(song,index)" v-for="(song,index) in songs" class="item" ref="list">
                 <div class="content">
+                    <div class="index">{{index+1}}</div>
                     <h2 class="name">{{song.name}}</h2>
                     <p class="desc">{{getDesc(song)}}</p>
                 </div>
@@ -71,7 +72,12 @@ export default {
                 flex: 1
                 line-height: 20px
                 overflow: hidden
-                padding-left: 30px
+                padding-left: 20px
+                .index
+                    float: left
+                    line-height: 42px
+                    padding-right: 20px;
+                    color: $color-text-d
                 .name
                     no-wrap()
                     color: $color-text
