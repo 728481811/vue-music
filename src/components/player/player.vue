@@ -1,6 +1,6 @@
 <template>
     <div class="player" v-show="playList.length>0">
-      <transition name="normal" >
+      <transition name="normal" @enter="enter($event)" @after-enter="afterEnter" @leave="leave" @after-leave="afterLeave"> 
         <div class="normal-player" @touchstart="touchStart($event)" @touchmove.stop.prevent="touchMove($event)" v-show="fullscreen" ref="normal"> 
           <div class="background">
             <img width="100%" height="100%" :src="currentSong.image">
@@ -14,7 +14,7 @@
           </div>
           <div class="middle">
             <div class="middle-l">
-              <div class="cd-wrapper">
+              <div class="cd-wrapper" ref="cdWrapper">
                 <div class="cd">
                   <img class="image" :src="currentSong.image"></img>
                 </div>
@@ -61,39 +61,105 @@
 </template>
 <script type="text/ecmascript-6">
     import {mapMutations,mapGetters} from 'vuex'
+    import animations from 'create-keyframe-animation'
+    import {prefixStyle} from 'common/js/dom'
+    const transform = prefixStyle('transform')
     export default{
         data() {
           return {
             tStart: 0,
-            tMove: 0
-            
+            tMove: 0,
+            event: false
           }
         },
         computed: {
             ...mapGetters([
                 'fullscreen',
                 'playList',
-                'currentSong'
+                'currentSong',
+                'animationStatus'
             ])
         },
         methods: {
+          enter(el, done) {
+            const {x, y, scale} = this._getPosAndScale()
+            this.setAnimationStatus(false)
+            let animation = {
+              0: {
+                transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+              },
+              60: {
+                transform: `translate3d(0,0,0) scale(1.5)`
+              },
+              100: {
+                transform: `translate3d(0,0,0) scale(1)`
+              }
+            }
+
+            animations.registerAnimation({
+              name: 'move',
+              animation,
+              presets: {
+                duration: 400,
+                easing: 'linear'
+              }
+            })
+
+            animations.runAnimation(this.$refs.cdWrapper, 'move',done)
+          },
+          afterEnter() {
+            animations.unregisterAnimation('move')
+            this.$refs.cdWrapper.style.animation = ''
+            this.setAnimationStatus(true)
+          },
+          leave(el, done) {
+            this.setAnimationStatus(false)
+            this.$refs.cdWrapper.style.transition = 'all 0.4s'
+            const {x, y, scale} = this._getPosAndScale()
+            this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+            this.$refs.cdWrapper.addEventListener('transitionend', done)
+          },
+          afterLeave() {
+            this.$refs.cdWrapper.style.transition = ''
+            this.$refs.cdWrapper.style[transform] = ''
+            this.setAnimationStatus(true)
+          },
           touchStart(e) {
             this.tStart = e.touches[0].pageY
           },
           touchMove(e) {
             this.tMove =  e.touches[0].pageY - this.tStart
-            if(this.tMove > 70){
+            if(this.tMove > 70 && this.animationStatus){
               this.setFullScreen(false)
             }             
           },
           back() {
-            this.setFullScreen(false)
+            if(this.animationStatus){
+              this.setFullScreen(false) 
+              console.log(1)
+            }
           },
           open() {
-            this.setFullScreen(true)
+            if(this.animationStatus){
+              this.setFullScreen(true)
+            }
+          },
+          _getPosAndScale() {
+            const targetWidth = 40
+            const paddingLeft = 40
+            const paddingBottom = 30
+            const paddingTop = 80
+            const width =  window.innerWidth * 0.8
+            const scale = targetWidth/width
+            const x = -(window.innerWidth / 2 - paddingLeft)
+            const y = window.innerHeight - paddingTop - width/2 - paddingBottom
+            return {
+              x,y,scale
+            }
           },
           ...mapMutations({
-          setFullScreen: 'SET_FULL_SCREEN'
+          setFullScreen: 'SET_FULL_SCREEN',
+          setAnimationStatus: 'SET_ANIMATION_STATUS'
         })
       },
     }
@@ -147,7 +213,7 @@
           font-size: $font-size-medium
           color: $color-text
       .middle
-        position: relative
+        position: fixed
         width: 100%
         top: 80px
         bottom: 170px
@@ -272,7 +338,7 @@
       &.normal-enter-active
         transition: all 0.4s
       &.normal-leave-active
-        transition: all 0.6s
+        transition: all 0.4s
       &.normal-enter, &.normal-leave-to
         opacity: 0
         transform: translate3d(0, 1200px, 0)

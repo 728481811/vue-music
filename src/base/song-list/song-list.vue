@@ -13,7 +13,13 @@
 </template>
 
 <script type="text/ecmascript-6">
+import {mapMutations,mapGetters} from 'vuex'
 export default {
+    computed: {
+        ...mapGetters([
+            'animationStatus'
+        ])
+    },
     props: {
         songs: {
             type: Array,
@@ -22,18 +28,20 @@ export default {
     },
     methods: {              
         selectItem(item,index) {
-            this.$emit('select',item,index)
-            this.$refs.list[index].style.backgroundColor = '#333'
-            setTimeout(() => {
-                this.removeStyle(index)
-            },200)            
+            if(this.animationStatus){
+                this.$emit('select',item,index)
+                this.$refs.list[index].style.backgroundColor = '#333'
+                setTimeout(() => {
+                    this.removeStyle(index)
+                },200)
+            }  
         },
         removeStyle(index) {
             this.$refs.list[index].style.backgroundColor = ''
         },
         getDesc(song) {
             return `${song.singer}-${song.album}`
-        }
+        },
     }
 }
 </script>
