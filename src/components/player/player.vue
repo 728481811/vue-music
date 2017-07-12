@@ -89,7 +89,7 @@
                 transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
               },
               60: {
-                transform: `translate3d(0,0,0) scale(1.5)`
+                transform: `translate3d(0,0,0) scale(1.3)`
               },
               100: {
                 transform: `translate3d(0,0,0) scale(1)`
@@ -235,8 +235,7 @@
             .cd
               width: 100%
               height: 100%
-              box-sizing: border-box
-              border: 10px solid rgba(255, 255, 255, 0.1)
+              
               border-radius: 50%
               &.play
                 animation: rotate 20s linear infinite
@@ -246,10 +245,11 @@
                 position: absolute
                 left: 0
                 top: 0
+                box-sizing: border-box
+                border: 10px solid rgba(0, 0, 0, 0.4)
                 width: 100%
                 height: 100%
                 border-radius: 50%
-
           .playing-lyric-wrapper
             width: 80%
             margin: 30px auto 0 auto
@@ -336,12 +336,12 @@
           .icon-favorite
             color: $color-sub-theme
       &.normal-enter-active
-        transition: all 0.4s
+        transition: all 0.3s
       &.normal-leave-active
         transition: all 0.4s
       &.normal-enter, &.normal-leave-to
         opacity: 0
-        transform: translate3d(0, 1200px, 0)
+        transform: translate3d(0, 800px, 0)
     .mini-player
       box-shadow: 0 0 20px #171616
       display: flex
