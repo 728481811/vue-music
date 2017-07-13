@@ -11,11 +11,12 @@
             </div>
             <h1 class="title" v-html="currentSong.name"></h1>
             <h2 class="subtitle" v-html="currentSong.singer"></h2>
+            <div class="needle" ref="needle"></div>
           </div>
           <div class="middle">
             <div class="middle-l">
               <div class="cd-wrapper" ref="cdWrapper">
-                <div class="cd">
+                <div class="cd" :class="cdCls">
                   <img class="image" :src="currentSong.image"></img>
                 </div>
               </div>
@@ -30,7 +31,9 @@
                 <i class="icon-prev"></i>
               </div>
               <div class="icon i-center">
-                <i class="icon-play"></i>
+                <transition name="iconTransition">
+                  <i :class="playIcon" @click="togglePlaying" ref="playIcon"></i>
+                </transition>
               </div>
               <div class="icon i-right">
                 <i class="icon-next"></i>
@@ -45,18 +48,21 @@
       <transition name="mini">
         <div class="mini-player" v-show="!fullscreen"  @click="open">
           <div class="icon">
-            <img width="40" height="40" :src="currentSong.image">
+            <img width="40" height="40" :src="currentSong.image" :class="cdCls">
           </div>
           <div class="text">
             <h2 class="name" v-html="currentSong.name"></h2>
             <p class="desc" v-html="currentSong.singer"></p>
           </div>
-          <div class="control"></div>
+          <div class="control">
+            <i :class="miniIcon" @click.stop.prevent="togglePlaying"></i>
+          </div>
           <div class="control">
             <i class="icon-playlist"></i>
           </div>
         </div>
       </transition>
+      <audio :src='currentSong.url' ref="audio"></audio>
     </div>
 </template>
 <script type="text/ecmascript-6">
@@ -73,11 +79,21 @@
           }
         },
         computed: {
+          cdCls() {
+            return this.playing ? 'play' : 'play pause'
+          },
+          playIcon() {
+            return this.playing ? 'icon-pause' : 'icon-play'
+          },
+          miniIcon() {
+            return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+          },
             ...mapGetters([
                 'fullscreen',
                 'playList',
                 'currentSong',
-                'animationStatus'
+                'animationStatus',
+                'playing'
             ])
         },
         methods: {
@@ -142,13 +158,13 @@
           open() {
             if(this.animationStatus){
               this.setFullScreen(true)
-            }
+            } 
           },
           _getPosAndScale() {
             const targetWidth = 40
             const paddingLeft = 40
             const paddingBottom = 30
-            const paddingTop = 80
+            const paddingTop = 140
             const width =  window.innerWidth * 0.8
             const scale = targetWidth/width
             const x = -(window.innerWidth / 2 - paddingLeft)
@@ -157,11 +173,38 @@
               x,y,scale
             }
           },
+          togglePlaying() {
+            this.$refs.playIcon.style.textShadow = '0 0 9px #fff'
+            this.setPlayingState(!this.playing)
+            setTimeout(() => {
+              this.$refs.playIcon.style.textShadow = ''
+            },100)
+          },
           ...mapMutations({
           setFullScreen: 'SET_FULL_SCREEN',
-          setAnimationStatus: 'SET_ANIMATION_STATUS'
+          setAnimationStatus: 'SET_ANIMATION_STATUS',
+          setPlayingState: 'SET_PLAYING_STATE'
         })
       },
+      watch: {
+        currentSong() {
+          this.$nextTick(() => {
+            this.$refs.audio.play()
+          })
+        },
+        playing(newPlaying) {
+          const audio = this.$refs.audio
+          this.$nextTick(() => {
+            if(newPlaying) {
+              audio.play()
+              this.$refs.needle.style.transform = 'rotate(0)'
+            }else{
+              audio.pause()
+              this.$refs.needle.style.transform = 'rotate(-30deg)'
+            }
+          })
+        }
+      }
     }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -212,10 +255,21 @@
           text-align: center
           font-size: $font-size-medium
           color: $color-text
+        .needle
+          top: 66px 
+          left: 46%
+          z-index: 100
+          position: absolute
+          bg-image('needle-plus')
+          background-size: 110px 169px
+          width: 110px
+          height: 169px
+          transition: all 0.3s linear
+          transform-origin: 16% 10%
       .middle
         position: fixed
         width: 100%
-        top: 80px
+        top: 140px
         bottom: 170px
         white-space: nowrap
         font-size: 0
@@ -246,7 +300,7 @@
                 left: 0
                 top: 0
                 box-sizing: border-box
-                border: 10px solid rgba(0, 0, 0, 0.4)
+                border: 10px solid rgba(0, 0, 0, 0.3)
                 width: 100%
                 height: 100%
                 border-radius: 50%
