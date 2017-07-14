@@ -38,7 +38,17 @@ export default {
             default: []
         }
     },
-    methods: {              
+    beforeUpdate() {
+        this._currentIndex()
+    },
+    methods: {
+        _currentIndex() {
+            this.songs.forEach((item,index) => {
+                if(this.currentSong.id === item.id) {
+                    this.currentSongId = index
+                }
+            })
+        },              
         selectItem(item,index) {
             if(this.animationStatus){
                 this.$emit('select',item,index)
