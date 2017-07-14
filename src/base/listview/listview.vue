@@ -130,7 +130,6 @@
                     this.removeStyle(e)
                 },200)
                 this.$emit('select', item)
-                console.log(item)
             },
             removeDom(e) {
                 let list = e.currentTarget.getElementsByTagName('li')

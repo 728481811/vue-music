@@ -6,6 +6,7 @@
                     <div class="index">{{index+1}}</div>
                     <h2 class="name">{{song.name}}</h2>
                     <p class="desc">{{getDesc(song)}}</p>
+                    <current-percent v-show="currentSongId === index" :currentSongPercent="currentSongPercent"></current-percent>
                 </div>
             </li>
         </ul>
@@ -14,10 +15,21 @@
 
 <script type="text/ecmascript-6">
 import {mapMutations,mapGetters} from 'vuex'
+import currentPercent from 'base/currentPercent/currentPercent'
 export default {
+    components: {
+        currentPercent
+    },
+    data() {
+        return {
+            currentSongId: -1
+        }
+    },
     computed: {
         ...mapGetters([
-            'animationStatus'
+            'animationStatus',
+            'currentSong',
+            'currentSongPercent'
         ])
     },
     props: {
@@ -42,6 +54,15 @@ export default {
         getDesc(song) {
             return `${song.singer}-${song.album}`
         },
+    },
+    watch: {
+        currentSong(newCS) {
+            this.songs.forEach((item, index) => {
+                if(item.id === newCS.id) {
+                    this.currentSongId = index
+                }
+            })
+        }
     }
 }
 </script>
@@ -52,6 +73,7 @@ export default {
 
     .song-list
         .item
+            position: relative
             display: flex
             align-items: center
             box-sizing: border-box

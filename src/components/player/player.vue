@@ -23,6 +23,13 @@
             </div>
           </div>
           <div class="bottom">
+            <div class="progress-wrapper">
+              <span class="time time-l">{{format(currentTime)}}</span>
+              <div class="progress-bar-wrapper">
+                <progress-bar :percent="percent"></progress-bar>
+              </div>
+              <span class="time time-r">{{format(currentSong.duration)}}</span>
+            </div>
             <div class="operators">
               <div class="icon i-left">
                 <i class="icon-sequence"></i>
@@ -60,27 +67,35 @@
           <div class="control">
             <i class="icon-playlist"></i>
           </div>
+          <div class="mini-blur"></div>
         </div>
       </transition>
-      <audio :src='currentSong.url' ref="audio" @canplay="ready" @error="error"></audio>
+      <audio :src='currentSong.url' ref="audio" @timeupdate="updateTime" @canplay="ready" @error="error"></audio>
     </div>
 </template>
 <script type="text/ecmascript-6">
     import {mapMutations,mapGetters} from 'vuex'
     import animations from 'create-keyframe-animation'
     import {prefixStyle} from 'common/js/dom'
+    import progressBar from 'base/progress-bar/progress-bar'
     const transform = prefixStyle('transform')
     export default{
+        components: {
+          progressBar
+        },
         data() {
           return {
             tStart: 0,
             tMove: 0,
             event: false,
             songReady: false,
-
+            currentTime: 0
           }
         },
         computed: {
+          percent() {
+            return this.currentTime / this.currentSong.duration         
+          },
           cdCls() {
             return this.playing ? 'play' : 'play pause'
           },
@@ -104,6 +119,21 @@
           ])
         },
         methods: {
+          updateTime(e) {
+            this.currentTime = e.target.currentTime
+            this.currentSongPercent(this.currentTime / this.currentSong.duration)
+          },
+          format(interval) {
+            interval = interval | 0
+            const minute = interval / 60 | 0
+            const second = interval % 60
+            if(second < 10){
+              return `${minute}:0${second}`
+            }else{
+              return `${minute}:${second}`
+            }
+            
+          },
           enter(el, done) {
             const {x, y, scale} = this._getPosAndScale()
             this.setAnimationStatus(false)
@@ -112,7 +142,7 @@
                 transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
               },
               60: {
-                transform: `translate3d(0,0,0) scale(1.3)`
+                transform: `translate3d(0,0,0) scale(1.2)`
               },
               100: {
                 transform: `translate3d(0,0,0) scale(1)`
@@ -157,7 +187,6 @@
           back() {
             if(this.animationStatus){
               this.setFullScreen(false) 
-              console.log(1)
             }
           },
           open() {
@@ -197,8 +226,7 @@
             if(!this.playing) {
               this.togglePlaying()
             }
-            this.songReady = false
-            console.log(index)            
+            this.songReady = false           
           },
           next() {
             if(!this.songReady) {
@@ -213,7 +241,6 @@
               this.togglePlaying()
             }
             this.songReady = false
-            console.log(index)
           },
           ready() {
             this.songReady = true
@@ -222,10 +249,11 @@
             this.songReady = true
           },
           ...mapMutations({
-          setFullScreen: 'SET_FULL_SCREEN',
-          setAnimationStatus: 'SET_ANIMATION_STATUS',
-          setPlayingState: 'SET_PLAYING_STATE',
-          setCurrentIndex: 'SET_CURRENT_INDEX'
+            setFullScreen: 'SET_FULL_SCREEN',
+            setAnimationStatus: 'SET_ANIMATION_STATUS',
+            setPlayingState: 'SET_PLAYING_STATE',
+            setCurrentIndex: 'SET_CURRENT_INDEX',
+            currentSongPercent: 'SET_CURRENT_SONG_PERCENT'
         })
       },
       watch: {
@@ -446,10 +474,20 @@
       position: fixed
       left: 0
       bottom: 0
-      z-index: 180    
+      z-index: 180   
       width: 100%
       height: 60px
-      background: $color-highlight-background
+      background: rgba(51,51,51,0.8)
+      
+      .mini-blur
+        z-index: -1
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        filter: blur(2px)
+        background: rgba(51,51,51,0.8)
       &.mini-enter-active, &.mini-leave-active
         transition: all 0.4s
       &.mini-enter, &.mini-leave-to

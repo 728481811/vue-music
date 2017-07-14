@@ -24,7 +24,9 @@ const mutations = {
     [types.SET_ANIMATION_STATUS](state, flag) {
         state.animationStatus = flag
     },
-
+    [types.SET_CURRENT_SONG_PERCENT](state, percent) {
+        state.currentSongPercent = percent
+    }
 }
 
 export default mutations
