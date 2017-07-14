@@ -118,7 +118,6 @@
                 transform: `translate3d(0,0,0) scale(1)`
               }
             }
-
             animations.registerAnimation({
               name: 'move',
               animation,
@@ -127,7 +126,6 @@
                 easing: 'linear'
               }
             })
-
             animations.runAnimation(this.$refs.cdWrapper, 'move',done)
           },
           afterEnter() {
