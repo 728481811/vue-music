@@ -27,16 +27,16 @@
               <div class="icon i-left">
                 <i class="icon-sequence"></i>
               </div>
-              <div class="icon i-left">
-                <i class="icon-prev"></i>
+              <div class="icon i-left" :class="disableCls">
+                <i class="icon-prev" @click="prev"></i>
               </div>
-              <div class="icon i-center">
+              <div class="icon i-center" :class="disableCls">
                 <transition name="iconTransition">
                   <i :class="playIcon" @click="togglePlaying" ref="playIcon"></i>
                 </transition>
               </div>
-              <div class="icon i-right">
-                <i class="icon-next"></i>
+              <div class="icon i-right" :class="disableCls">
+                <i class="icon-next" @click="next"></i>
               </div>
               <div class="icon i-right">
                 <i class="icon icon-not-favorite"></i>
@@ -62,7 +62,7 @@
           </div>
         </div>
       </transition>
-      <audio :src='currentSong.url' ref="audio"></audio>
+      <audio :src='currentSong.url' ref="audio" @canplay="ready" @error="error"></audio>
     </div>
 </template>
 <script type="text/ecmascript-6">
@@ -75,7 +75,9 @@
           return {
             tStart: 0,
             tMove: 0,
-            event: false
+            event: false,
+            songReady: false,
+
           }
         },
         computed: {
@@ -88,13 +90,18 @@
           miniIcon() {
             return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
           },
-            ...mapGetters([
-                'fullscreen',
-                'playList',
-                'currentSong',
-                'animationStatus',
-                'playing'
-            ])
+          disableCls() {
+            return this.songReady ? '' : 'disable' 
+          },
+
+          ...mapGetters([
+              'fullscreen',
+              'playList',
+              'currentSong',
+              'animationStatus',
+              'playing',
+              'currentIndex'
+          ])
         },
         methods: {
           enter(el, done) {
@@ -180,10 +187,47 @@
               this.$refs.playIcon.style.textShadow = ''
             },100)
           },
+          prev() {
+            if(!this.songReady) {
+              return
+            }
+            let index = this.currentIndex - 1
+            if(index === -1) {
+              index = this.playList.length - 1
+            }
+            this.setCurrentIndex(index)
+            if(!this.playing) {
+              this.togglePlaying()
+            }
+            this.songReady = false
+            console.log(index)            
+          },
+          next() {
+            if(!this.songReady) {
+              return
+            }
+            let index = this.currentIndex + 1
+            if(index === this.playList.length) {
+              index = 0
+            }
+            this.setCurrentIndex(index)
+            if(!this.playing) {
+              this.togglePlaying()
+            }
+            this.songReady = false
+            console.log(index)
+          },
+          ready() {
+            this.songReady = true
+          },
+          error() {
+            this.songReady = true
+          },
           ...mapMutations({
           setFullScreen: 'SET_FULL_SCREEN',
           setAnimationStatus: 'SET_ANIMATION_STATUS',
-          setPlayingState: 'SET_PLAYING_STATE'
+          setPlayingState: 'SET_PLAYING_STATE',
+          setCurrentIndex: 'SET_CURRENT_INDEX'
         })
       },
       watch: {
@@ -264,7 +308,7 @@
           background-size: 110px 169px
           width: 110px
           height: 169px
-          transition: all 0.3s linear
+          transition: all 0.3s ease-out
           transform-origin: 16% 10%
       .middle
         position: fixed
@@ -375,7 +419,7 @@
             flex: 1
             color: $color-theme
             &.disable
-              color: $color-theme-d
+              color: rgba(153,153,153,0.4)
             i
               font-size: 30px
           .i-left
@@ -385,6 +429,7 @@
             text-align: center
             i
               font-size: 40px
+              transition: all 0.1s ease-out
           .i-right
             text-align: left
           .icon-favorite
