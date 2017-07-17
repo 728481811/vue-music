@@ -26,13 +26,13 @@
             <div class="progress-wrapper">
               <span class="time time-l">{{format(currentTime)}}</span>
               <div class="progress-bar-wrapper">
-                <progress-bar :percent="percent"></progress-bar>
+                <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>
               </div>
               <span class="time time-r">{{format(currentSong.duration)}}</span>
             </div>
             <div class="operators">
-              <div class="icon i-left">
-                <i class="icon-sequence"></i>
+              <div class="icon i-left" @click="changeMode">
+                <i :class="iconMode"></i>
               </div>
               <div class="icon i-left" :class="disableCls">
                 <i class="icon-prev" @click="prev"></i>
@@ -70,7 +70,7 @@
           <div class="mini-blur"></div>
         </div>
       </transition>
-      <audio :src='currentSong.url' ref="audio" @timeupdate="updateTime" @canplay="ready" @error="error"></audio>
+      <audio :src='currentSong.url' ref="audio" @ended="ended" @timeupdate="updateTime" @canplay="ready" @error="error"></audio>
     </div>
 </template>
 <script type="text/ecmascript-6">
@@ -79,6 +79,8 @@
     import {prefixStyle} from 'common/js/dom'
     import progressBar from 'base/progress-bar/progress-bar'
     const transform = prefixStyle('transform')
+    import {playMode} from 'common/js/config'
+    import {shuffle} from 'common/js/util'
     export default{
         components: {
           progressBar
@@ -108,17 +110,56 @@
           disableCls() {
             return this.songReady ? '' : 'disable' 
           },
-
+          iconMode() {
+            return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+          },
           ...mapGetters([
               'fullscreen',
               'playList',
               'currentSong',
               'animationStatus',
               'playing',
-              'currentIndex'
+              'currentIndex',
+              'mode',
+              'sequenceList'
           ])
         },
         methods: {
+          ended() {
+            if(this.mode === playMode.loop) {
+              this.loop()
+            }else{
+              this.next()
+            }
+          },
+          loop() {
+            this.$refs.audio.currentTime = 0
+            this.$refs.audio.play()
+          },
+          changeMode() {
+            const mode = (this.mode + 1)%3
+            this.setPlayMode(mode)
+            let list = null
+            if(mode === playMode.random) {
+              list = shuffle(this.sequenceList)
+            }else {
+              list = this.sequenceList
+            }
+            this._resetCurrentIndex(list)
+            this.setPlayList(list)
+          },
+          _resetCurrentIndex(list) {
+            let index = list.findIndex((item) => {
+              return item.id === this.currentSong.id
+            })
+            this.setCurrentIndex(index)
+          },
+          onProgressBarChange(percent) {
+            this.$refs.audio.currentTime = this.currentSong.duration * percent
+            if(!this.playing) {
+              this.togglePlaying()
+            }
+          },
           updateTime(e) {
             this.currentTime = e.target.currentTime
             this.currentSongPercent(this.currentTime / this.currentSong.duration)
@@ -253,11 +294,16 @@
             setAnimationStatus: 'SET_ANIMATION_STATUS',
             setPlayingState: 'SET_PLAYING_STATE',
             setCurrentIndex: 'SET_CURRENT_INDEX',
-            currentSongPercent: 'SET_CURRENT_SONG_PERCENT'
+            currentSongPercent: 'SET_CURRENT_SONG_PERCENT',
+            setPlayMode: 'SET_PLAY_MODE',
+            setPlayList: 'SET_PLAYLIST'
         })
       },
       watch: {
-        currentSong() {
+        currentSong(newSong, oldSong) {
+          if(newSong === oldSong) {
+            return
+          }
           this.$nextTick(() => {
             this.$refs.audio.play()
           })

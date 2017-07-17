@@ -6,7 +6,7 @@
         <div class="bg-image" :style="bgStyle" ref="bgImage">
             <h1 class="title" v-html="title" ref="title"></h1>
             <div class="play-wrapper">
-                <div class="play" v-show="songs.length" ref="playButton">
+                <div class="play" v-show="songs.length" ref="playButton" @click="random">
                     <i class="icon-play"></i>
                     <span class="text">随机播放</span>
                 </div>
@@ -41,7 +41,6 @@
         created() {
             this.probeType = 3
             this.listenScroll = true
-            
         },
         data() {
             return {
@@ -74,6 +73,9 @@
             }
         },
         methods: {
+            random() {
+                this.randomPlay({list:this.songs})
+            },
             slideStart(e) {
                 this.posStartX = e.touches[0].pageX
                 this.posStartY = e.touches[0].pageY
@@ -119,7 +121,8 @@
                 this.scrollY = pos.y
             },
             ...mapActions([
-                'selectPlay'
+                'selectPlay',
+                'randomPlay'
                 ])
         },
         mounted() {
