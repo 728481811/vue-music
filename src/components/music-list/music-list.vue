@@ -104,7 +104,6 @@
                 }
                 if(this.posStartX < 100){
                     this.$refs.musicList.style.left = this.moveDistanceX + 'px'
-                    console.log(this.$refs.bgImage.style.height)
                     if(this.$refs.bgImage.style.height !== '40px'){
                     this.$refs.bgImage.style.paddingTop = 0
                     this.$refs.bgImage.style.height = this.imageHeight + 'px'

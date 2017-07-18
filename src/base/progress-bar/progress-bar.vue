@@ -12,10 +12,9 @@
     </div>
   </div>
 </template>
-
 <script type="text/ecmascript-6">
   import {prefixStyle} from 'common/js/dom'
-  const progressBtnWidth = 14
+  const progressBtnWidth = 12
   const transform = prefixStyle('transform')
   export default {
     props: {
