@@ -21,6 +21,13 @@
                 </div>
               </div>
             </div>
+            <div class="middle-r" ref="lyricList">
+              <div class="lyric-wrapper">
+                <div v-if="currentLyric">
+                  <p  ref="lyricLine" class="text" v-for="(line,index) in currentLyric.lines" :class="{'current': currentLineNum === index}">{{line.txt}}</p>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="bottom">
             <div class="progress-wrapper">
@@ -81,6 +88,7 @@
     const transform = prefixStyle('transform')
     import {playMode} from 'common/js/config'
     import {shuffle} from 'common/js/util'
+    import Lyric from 'lyric-parser'
     export default{
         components: {
           progressBar
@@ -91,7 +99,9 @@
             tMove: 0,
             event: false,
             songReady: false,
-            currentTime: 0
+            currentTime: 0,
+            currentLyric: null,
+            currentLineNum: 0
           }
         },
         computed: {
@@ -289,6 +299,17 @@
           error() {
             this.songReady = true
           },
+          getLyric() {
+              this.currentSong.getLyric().then((lyric) => {
+              this.currentLyric = new Lyric(lyric, this.handleLyric)
+              if(this.playing) {
+                this.currentLyric.play()
+              }
+            })
+          },
+          handleLyric({lineNum, txt}) {
+            this.currentLineNum = lineNum
+          },
           ...mapMutations({
             setFullScreen: 'SET_FULL_SCREEN',
             setAnimationStatus: 'SET_ANIMATION_STATUS',
@@ -306,7 +327,7 @@
           }
           this.$nextTick(() => {
             this.$refs.audio.play()
-            this.currentSong.getLyric()
+            this.getLyric()
           })
         },
         playing(newPlaying) {

@@ -59,7 +59,6 @@ apiRouter.get('/lyric', function(req, res) {
     } 
     res.json(ret)
   }).catch((e) => {
-    console.log(e)
     })
 })
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
