@@ -1,5 +1,5 @@
-<template>
-    <div class="recommend">
+<template> 
+    <div class="recommend" ref="recommend">
         <scroll ref="scroll" class="recommend-content" :data="discList">
             <div>
                 <div v-if="recommend.length" class="slider-wrapper">
@@ -38,7 +38,9 @@
     import slider from 'base/slider/slider'
     import {getRecommend,getDiscList} from 'api/recommend'
     import {ERR_OK} from 'api/config'
+    import {playlistMixin} from 'common/js/mixin'
     export default{
+        mixins: [playlistMixin],
         data(){
             return {
                 recommend: [],
@@ -54,6 +56,12 @@
             this._getDiscList()
         },
         methods: {
+            handlePlaylist(playlist) {
+                const bottom = playlist.length > 0 ? '60px' : '' 
+                this.$refs.recommend.style.bottom = bottom
+                this.$refs.scroll.refresh()
+                console.log(bottom)
+            },
             addStyle(index) {
                 this.$refs.list[index].style.backgroundColor = '#333'
                 setTimeout(() => {

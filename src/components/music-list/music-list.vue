@@ -38,6 +38,7 @@
     const backdrop = prefixStyle('backdrop-filter')
 
     export default {
+        mixins: [playlistMixin],
         created() {
             this.probeType = 3
             this.listenScroll = true
@@ -73,6 +74,11 @@
             }
         },
         methods: {
+            handlePlaylist(playlist) {
+                const bottom = playlist.length > 0 ? '60px' : '' 
+                this.$refs.list.$el.style.bottom = bottom
+                this.$refs.list.refresh()
+            },
             random() {
                 this.randomPlay({list:this.songs})
             },

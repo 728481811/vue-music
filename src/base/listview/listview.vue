@@ -62,6 +62,9 @@
             }
         },
         methods: {
+            refresh() {
+                this.$refs.listview.refresh()
+            },
             onShortcutTouchMove(e) {
                 let firstTouch = e.touches[0]
                 this.touch.y2 = firstTouch.pageY
@@ -69,7 +72,6 @@
                 let anchorIndex = parseInt(this.touch.anchorIndex +  delta)
                 this.addDom(e, anchorIndex)
                 this._scrollTo(anchorIndex)
-                
             },           
             onShortcutTouchStart(e,item) {
                 let firstTouch = e.touches[0]
