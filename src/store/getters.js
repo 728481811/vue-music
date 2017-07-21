@@ -7,6 +7,8 @@ export const mode = state => state.mode
 export const currentIndex = state => state.currentIndex
 export const animationStatus = state => state.animationStatus
 export const currentSongPercent = state => state.currentSongPercent
+export const voice = state => state.voice
+
 export const currentSong = (state) => {
     return state.playList[state.currentIndex] || {}
 }

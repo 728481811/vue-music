@@ -26,6 +26,9 @@ const mutations = {
     },
     [types.SET_CURRENT_SONG_PERCENT](state, percent) {
         state.currentSongPercent = percent
+    },
+    [types.SET_VOICE](state, percent) {
+        state.voice = percent
     }
 }
 

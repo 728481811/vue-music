@@ -8,7 +8,8 @@ const state = {
     sequenceList: [],
     mode: playMode.sequence,
     currentIndex: -1,
-    currentSongPercent: 0
+    currentSongPercent: 0,
+    voice: 1
 }
 
 export default state
