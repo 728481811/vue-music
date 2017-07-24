@@ -29,6 +29,9 @@ const mutations = {
     },
     [types.SET_VOICE](state, percent) {
         state.voice = percent
+    },
+    [types.SET_DISC](state, disc) {
+        state.disc = disc
     }
 }
 

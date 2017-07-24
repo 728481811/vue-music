@@ -12,7 +12,7 @@
             <h1 class="title" v-html="currentSong.name"></h1>
             <h2 class="subtitle" v-html="currentSong.singer"></h2>
             <div class="needle" ref="needle"></div>
-            <div class="voice-content" ref="voice">
+<!--             <div class="voice-content" ref="voice">
               <span class="voice-text voice-text-l">音量</span>
               <div class="voice-wrapper" ref="voiceWrapper">
                 <div class="voice">
@@ -27,7 +27,7 @@
                 </div>
               </div>
               <span class="voice-text voice-text-r">{{voice*100}}%</span>
-            </div>
+            </div> -->
           </div>
           <div class="middle" @touchstart.prevent="middleTouchStart" @touchmove.prevent="middleTouchMove" @touchend="middleTouchEnd">
             <div class="middle-l" ref="middleL">
@@ -168,27 +168,27 @@
           ])
         },
         methods: {
-          voiceStart(e) {
-            this.voiceTouch.init = true
-            this.voiceTouch.startX = e.touches[0].pageX
-            this.voiceTouch.left = this.$refs.progress.clientWidth
-          },
-          voiceMove(e) {
-            if(!this.voiceTouch.init) {
-              return 
-            }
-            const deltaX = e.touches[0].pageX - this.voiceTouch.startX
-            const offsetWidth =  Math.min(this.$refs.progress.clientWidth - 12,Math.max(0,this.voiceTouch.left + deltaX))
-            this._offset(deltaX)
-          },
-          voiceEnd(e) {
-            this.voiceTouch.init = false
+          // voiceStart(e) {
+          //   this.voiceTouch.init = true
+          //   this.voiceTouch.startX = e.touches[0].pageX
+          //   this.voiceTouch.left = this.$refs.progress.clientWidth
+          // },
+          // voiceMove(e) {
+          //   if(!this.voiceTouch.init) {
+          //     return 
+          //   }
+          //   const deltaX = e.touches[0].pageX - this.voiceTouch.startX
+          //   const offsetWidth =  Math.min(this.$refs.progress.clientWidth - 12,Math.max(0,this.voiceTouch.left + deltaX))
+          //   this._offset(deltaX)
+          // },
+          // voiceEnd(e) {
+          //   this.voiceTouch.init = false
 
-          },
-          _offset(offsetWidth) {
-            // this.$refs.progress.style.width = `${offsetWidth}px`
-            this.$refs.voiceBtn.style[transform] = `translate3d(${offsetWidth}px,0,0)`
-          },
+          // },
+          // _offset(offsetWidth) {
+          //   // this.$refs.progress.style.width = `${offsetWidth}px`
+          //   this.$refs.voiceBtn.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+          // },
           middleTouchStart(e) {
             this.touch.initiated = true
             const touch = e.touches[0]
@@ -215,10 +215,8 @@
             this.$refs.lyricList.$el.style[transitionDuration] = 0
             this.$refs.middleL.style.opacity = 1 - this.touch.percent
             this.$refs.needle.style.opacity = 1 - this.touch.percent
-            this.$refs.voice.style.opacity = this.touch.percent
             this.$refs.middleL.style[transitionDuration] = 0
             this.$refs.needle.style[transitionDuration] = 0
-            this.$refs.voice.style[transitionDuration] = 0
           },
           middleTouchEnd() {
             let width 
@@ -246,10 +244,8 @@
             this.$refs.lyricList.$el.style[transform] = `translate3d(${width}px,0,0)`
             this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
             this.$refs.middleL.style.opacity = opacity
-            this.$refs.voice.style.opacity = 1 - opacity
             this.$refs.needle.style.opacity = opacity
             this.$refs.middleL.style[transitionDuration] = `${time}ms`
-            this.$refs.voice.style[transitionDuration] = `${time}ms`
             this.$refs.needle.style[transitionDuration] = `${time}ms`
           },
           ended() {
@@ -467,8 +463,8 @@
             this.currentLyric.stop()
           }
           this.$nextTick(() => {
-            this.$refs.progress.style.width = this.voice*100 + '%'
-            this.$refs.voiceBtn.style.left = -12 + this.$refs.progress.clientWidth + 'px'
+            // this.$refs.progress.style.width = this.voice*100 + '%'
+            // this.$refs.voiceBtn.style.left = -12 + this.$refs.progress.clientWidth + 'px'
             this.$refs.audio.volume = this.voice
             this.$refs.audio.play()
             this.getLyric()

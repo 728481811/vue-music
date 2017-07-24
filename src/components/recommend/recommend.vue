@@ -14,7 +14,7 @@
                 <div class="recommend-list">
                     <h1 class="list-title">热门歌单推荐</h1>
                     <ul>
-                        <li v-for="(item,index) in discList" class="item" ref="list" @click="addStyle(index)" @touchend="removeStyle(index)">
+                        <li v-for="(item,index) in discList" class="item" ref="list" @click="addStyle(index,item)" @touchend="removeStyle(index)">
                             <div class="icon">
                                 <img v-lazy="item.imgurl" width="60" height="60" class="load-image" lazy="loaded">
                             </div>
@@ -30,6 +30,7 @@
                 <loading :title="title"></loading>
             </div>
         </scroll>
+        <router-view></router-view>
     </div>
 </template>
 <script type="text/ecmascript-6">
@@ -39,6 +40,7 @@
     import {getRecommend,getDiscList} from 'api/recommend'
     import {ERR_OK} from 'api/config'
     import {playlistMixin} from 'common/js/mixin'
+    import {mapMutations} from 'vuex'
     export default{
         mixins: [playlistMixin],
         data(){
@@ -61,11 +63,15 @@
                 this.$refs.recommend.style.bottom = bottom
                 this.$refs.scroll.refresh()
             },
-            addStyle(index) {
+            addStyle(index, item) {
                 this.$refs.list[index].style.backgroundColor = '#333'
                 setTimeout(() => {
                     this.removeStyle(index)
                 },200)
+                this.$router.push({
+                    path: `/recommend/${item.dissid}`
+                })
+                this.setDisc(item)
             },
             removeStyle(index) {
                 this.$refs.list[index].style.backgroundColor = ''
@@ -89,7 +95,10 @@
                     this.checkLoaded = true
                     this.$refs.scroll.refresh()
                 }
-            }
+            },
+            ...mapMutations ({
+                setDisc : 'SET_DISC'
+            })
         }
     }
 </script>

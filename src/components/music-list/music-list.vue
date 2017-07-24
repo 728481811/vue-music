@@ -89,7 +89,7 @@
             },
             slideEnd() {
                 if(this.moveDistanceX > 100 && this.posStartX < 100) {
-                        this.$router.push('/singer')
+                        this.$router.back()
                 }else {
                     this.$refs.musicList.style.transition = 'left 0.3s ease'
                     this.$refs.musicList.style.left = 0
@@ -120,7 +120,7 @@
                 this.selectPlay({list: this.songs,index}) 
             },
             backSinger(e) {
-                this.$router.push('/singer')
+                this.$router.back()
             },
             scroll(pos) {
                 this.scrollY = pos.y
