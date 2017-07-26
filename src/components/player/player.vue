@@ -80,6 +80,9 @@
               </div>
             </div>
           </div>
+          <transition name="modeAnimation">
+            <div class="patten-tip" v-show="isMode">{{modeText}}</div>
+          </transition>
         </div>
       </transition>
       <transition name="mini">
@@ -133,7 +136,9 @@
             currentLyric: null,
             currentLineNum: 0,
             currentShow: 'cd',
-            playingLyric: ''
+            playingLyric: '',
+            isMode: false,
+            modeText: ''
           }
         },
         computed: {
@@ -481,6 +486,14 @@
               this.$refs.needle.style.transform = 'rotate(-30deg)'
             }
           })
+        },
+        mode(newMode) {
+          this.isMode = true
+          this.mode === 0 ? this.modeText = '顺序模式' : this.mode === 1 ? this.modeText = '单曲循环' : this.modeText = '随机模式'
+          console.log(this.mode)
+          setTimeout(() => {
+            this.isMode = false
+          },600)
         }
       }
     }
@@ -717,6 +730,20 @@
             text-align: left
           .icon-favorite
             color: $color-sub-theme
+      .patten-tip
+        position: absolute
+        background: #333
+        border-radius: 5px
+        top: 30%
+        left: 43%
+        padding: 10px
+        font-size: 12px
+        box-shadow: 0 0 6px #b5b4b4
+        z-index: 100
+        &.modeAnimation-enter-active, &.modeAnimation-leave-active
+           transition: all 0.2s
+        &.modeAnimation-enter, &.modeAnimation-leave-to
+          opacity: 0   
       &.normal-enter-active
         transition: all 0.3s
       &.normal-leave-active
