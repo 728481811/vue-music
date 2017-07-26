@@ -16,8 +16,8 @@ export function getDiscList() {
     const data = Object.assign({},commonParams,{
             platform: 'yqq',
             hostUin: 0,
-            sin: 90,
-            ein: 119,
+            sin: 0,
+            ein: 69,
             sortId: 5,
             needNewCode: 0,
             categoryId: 10000000,
@@ -33,7 +33,6 @@ export function getDiscList() {
 
 export function getSongList(disstid) {
   const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
-
   const data = Object.assign({}, commonParams, {
     disstid,
     type: 1,
@@ -43,8 +42,8 @@ export function getSongList(disstid) {
     platform: 'yqq',
     hostUin: 0,
     needNewCode: 0,
-    g_tk:534127172
+    g_tk: 534127172
   })
-
+    options.prefix = 'jp'
   return jsonp(url, data, options)
 }
