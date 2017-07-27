@@ -1,8 +1,8 @@
-import {getLyric} from 'api/song'
+import {getLyric, getSongInfo} from 'api/song'
 import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
 export default class Song {
-    constructor({id,mid,singer,name,album,duration,image,url}) {
+    constructor({id,mid,singer,name,album,duration,image,url,albummid}) {
         this.id = id
         this.mid = mid
         this.singer = singer
@@ -11,6 +11,7 @@ export default class Song {
         this.duration = duration
         this.image = image
         this.url = url
+        this.albummid = albummid
     }
     getLyric() {
         if(this.lyric) {
@@ -27,10 +28,26 @@ export default class Song {
             })
         })   
     }
+    getSongInfo() {
+        if(this.info) {
+            return Promise.resolve(this.info)
+        }
+        return new Promise((resolve, reject) => {
+            getSongInfo(this.albummid).then((res) => {
+                if(res.code === ERR_OK) {
+                    this.info = res.data
+                    resolve(this.info)
+                } else {
+                    reject('no songInfo')
+                }
+            })
+        })
+    }
 }
 export function createSong(musicData) {
     return new Song({
         id: musicData.songid,
+        albummid: musicData.albummid,
         mid: musicData.songmid,
         singer: filterSinger(musicData.singer),
         name: musicData.songname,

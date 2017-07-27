@@ -12,22 +12,10 @@
             <h1 class="title" v-html="currentSong.name"></h1>
             <h2 class="subtitle" v-html="currentSong.singer"></h2>
             <div class="needle" ref="needle"></div>
-<!--             <div class="voice-content" ref="voice">
-              <span class="voice-text voice-text-l">音量</span>
-              <div class="voice-wrapper" ref="voiceWrapper">
-                <div class="voice">
-                  <div class="voice-inner">
-                    <div class="voice-progress" ref="progress">
-                    </div>
-                    <div class="voice-btn-wrapper" ref="voiceBtn"
-                     @touchstart.prevent="voiceStart" @touchmove.prevent="voiceMove" @touchend="voiceEnd">
-                      <div class="voice-btn"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <span class="voice-text voice-text-r">{{voice*100}}%</span>
-            </div> -->
+            <div class="info"  ref="info">
+              <span>语种:{{songInfo.lan}}</span>
+              <span>流派:{{songInfo.genre}}</span>
+            </div>
           </div>
           <div class="middle" @touchstart.prevent="middleTouchStart" @touchmove.prevent="middleTouchMove" @touchend="middleTouchEnd">
             <div class="middle-l" ref="middleL">
@@ -138,7 +126,8 @@
             currentShow: 'cd',
             playingLyric: '',
             isMode: false,
-            modeText: ''
+            modeText: '',
+            songInfo: {}
           }
         },
         computed: {
@@ -220,8 +209,10 @@
             this.$refs.lyricList.$el.style[transitionDuration] = 0
             this.$refs.middleL.style.opacity = 1 - this.touch.percent
             this.$refs.needle.style.opacity = 1 - this.touch.percent
+            this.$refs.info.style.opacity = this.touch.percent
             this.$refs.middleL.style[transitionDuration] = 0
             this.$refs.needle.style[transitionDuration] = 0
+            this.$refs.info.style[transitionDuration] = 0
           },
           middleTouchEnd() {
             let width 
@@ -250,8 +241,10 @@
             this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
             this.$refs.middleL.style.opacity = opacity
             this.$refs.needle.style.opacity = opacity
+            this.$refs.info.style.opacity = 1 - opacity
             this.$refs.middleL.style[transitionDuration] = `${time}ms`
             this.$refs.needle.style[transitionDuration] = `${time}ms`
+            this.$refs.info.style[transitionDuration] = `${time}ms`
           },
           ended() {
             if(this.mode === playMode.loop) {
@@ -438,6 +431,12 @@
               this.currentLineNum = 0
             })
           },
+          getSongInfo() {
+            this.currentSong.getSongInfo().then((info) => {
+              this.songInfo = info
+              console.log(this.songInfo)
+            })
+          },
           handleLyric({lineNum, txt}) {
             this.currentLineNum = lineNum
             if (this.currentLineNum > 5 ) {
@@ -473,6 +472,7 @@
             this.$refs.audio.volume = this.voice
             this.$refs.audio.play()
             this.getLyric()
+            this.getSongInfo()
           })
         },
         playing(newPlaying) {
@@ -557,6 +557,16 @@
           height: 169px
           transition: all 0.3s ease-out
           transform-origin: 16% 10%
+        .info
+          opacity: 0
+          font-size: 12px
+          display: flex
+          padding-top: 10px
+          color: rgba(255,255,255,0.5)
+          span
+            display: inline-block
+            text-align: center
+            flex: 1
         .voice-content
           position: relative
           opacity: 0
