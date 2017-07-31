@@ -26,6 +26,10 @@
             pullup: {
                 type: Boolean,
                 default: false
+            },
+            beforeScroll: {
+                type: Boolean,
+                default: false
             }
         },
         mounted() {
@@ -56,6 +60,11 @@
                             console.log(this.scroll)
 
                         }
+                    })
+                }
+                if(this.beforeScroll) {
+                    this.scroll.on('beforeScrollStart',() => {
+                        this.$emit('beforeScroll')
                     })
                 }
             },

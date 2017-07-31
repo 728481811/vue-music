@@ -19,7 +19,7 @@
       <loading v-show="hasMore" title=""></loading>
     </ul>
     <div v-show="!hasMore && !result.length" class="no-result-wrapper">
-      
+      <no-result title="抱歉，暂无搜索结果"></no-result>
     </div>
   </scroll>
 </template>
@@ -32,7 +32,7 @@
   import {createSong} from 'common/js/song'
   import {mapMutations, mapActions} from 'vuex'
   import Singer from 'common/js/singer'
-
+  import NoResult from 'base/no-result/no-result'
   const TYPE_SINGER = 'singer'
   const perpage = 20
 
@@ -156,6 +156,7 @@
     components: {
       Scroll,
       Loading,
+      NoResult
     }
   }
 </script>

@@ -13,10 +13,19 @@
 	  				</li>
 	  			</ul>
 	  		</div>
+        <div class="search-history" v-show="searchHistory.length">
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span @click="showConfirm" class="clear">
+              <i class="icon-clear"></i>
+            </span>
+          </h1>
+          <search-list @delete="deleteOne" @select="addQuery" :searches="searchHistory"></search-list>
+        </div>
 	  	</div>
   	</div>
   	<div class="search-result" v-show="query">
-  		<suggest :query="query"></suggest>
+  		<suggest :query="query" @listScroll="blurInput" @select="saveSearch"></suggest>
   	</div>
   	<router-view></router-view>
   </div>
@@ -27,12 +36,13 @@
   import Scroll from 'base/scroll/scroll'
   import {ERR_OK} from 'api/config'
   import {playlistMixin, searchMixin} from 'common/js/mixin'
-  import {mapActions} from 'vuex'
+  import {mapActions, mapGetters} from 'vuex'
   import {getHotKey} from 'api/search'
+  import SearchList from 'base/search-list/search-list'
   import Suggest from 'components/suggest/suggest'
   export default {
   	components: {
-  		SearchBox,Suggest
+  		SearchBox,Suggest,SearchList
   	},
   	created() {
   		this._getHotKey()
@@ -43,21 +53,43 @@
   			query: ''
   		}
   	},
+    computed: {
+      ...mapGetters([
+          'searchHistory',
+          
+        ])
+    },
   	methods: {
+      showConfirm() {
+        this.clearSearchHistory()
+      },
+      deleteOne(item) {
+        this.deleteSearchHistory(item)
+      },
+      saveSearch() {
+        this.saveSearchHistory(this.query)
+      },
+      blurInput() {
+        this.$refs.searchBox.blur()
+      },
   		onQueryChange(query) {
   			this.query = query
   		},
   		addQuery(query) {
   			this.$refs.searchBox.setQuery(query)
   		},
-
   		_getHotKey() {
   			getHotKey().then((res) => {
   				if(res.code === ERR_OK) {
   					this.hotKey = res.data.hotkey.slice(0,10)
   				}
   			})
-  		}
+  		},
+      ...mapActions([
+        'saveSearchHistory',
+        'deleteSearchHistory',
+        'clearSearchHistory'
+        ])
   	}
 }
 </script>
