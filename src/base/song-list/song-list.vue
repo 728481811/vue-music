@@ -2,8 +2,10 @@
     <div class="song-list">
         <ul>
             <li @click="selectItem(song,index)" v-for="(song,index) in songs" class="item" ref="list">
+                <div class="rank" v-show="rank">
+                    <span :class="getRankCls(index)">{{getRankText(index)}}</span>
+                </div>
                 <div class="content">
-                    <div class="index">{{index+1}}</div>
                     <h2 class="name">{{song.name}}</h2>
                     <p class="desc">{{getDesc(song)}}</p>
                     <current-percent v-show="currentSongId === index" :currentSongPercent="currentSongPercent"></current-percent>
@@ -36,12 +38,28 @@ export default {
         songs: {
             type: Array,
             default: []
+        },
+        rank: {
+            type: Boolean,
+            default: false
         }
     },
     beforeUpdate() {
         this._currentIndex()
     },
     methods: {
+        getRankCls(index) {
+            if(index <= 2) {
+                return `icon icon${index}`
+            } else {
+                return `text`
+            }
+        },
+        getRankText(index) {
+            if(index > 2) {
+                return index + 1
+            }
+        },
         _currentIndex() {
             this.songs.forEach((item,index) => {
                 if(this.currentSong.id === item.id) {
@@ -92,7 +110,7 @@ export default {
             .rank
                 flex: 0 0 25px
                 width: 25px
-                margin-right: 30px
+                margin-left: 30px
                 text-align: center
                 .icon
                     display: inline-block

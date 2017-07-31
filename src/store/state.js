@@ -10,7 +10,8 @@ const state = {
     currentIndex: -1,
     currentSongPercent: 0,
     voice: 1,
-    disc: {}
+    disc: {},
+    topList: {}
 }
 
 export default state
