@@ -104,7 +104,7 @@
   					this.$refs.shortcut.refresh()
   				})
   			}
-  		}
+  		}        
   	}
 }
 </script>
