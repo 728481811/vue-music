@@ -3,7 +3,7 @@
     <div class="search-box-wrapper" >
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
-    <div class="shortcut-wrapper" v-show="!query">
+    <div class="shortcut-wrapper" v-show="!query" ref="shortcutWrapper">
 	  	<scroll class="shortcut" :data="shortcut" ref="shortcut">
 	  		<div>
 	  			<div class="hot-key">
@@ -26,8 +26,8 @@
 	        </div>
 	  	</scroll>
   	</div>
-  	<div class="search-result" v-show="query">
-  		<suggest :query="query" @listScroll="blurInput" @select="saveSearch"></suggest>
+  	<div class="search-result" v-show="query" ref="searchResult">
+  		<suggest :query="query" ref="suggest" @listScroll="blurInput" @select="saveSearch"></suggest>
   	</div>
   	<confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
   	<router-view></router-view>
@@ -45,6 +45,7 @@
   import SearchList from 'base/search-list/search-list'
   import Suggest from 'components/suggest/suggest'
   export default {
+  	mixins: [playlistMixin],
   	components: {
   		SearchBox,Suggest,SearchList,Confirm,Scroll
   	},
@@ -66,6 +67,13 @@
         ])
     },
   	methods: {
+  		handlePlaylist(playlist) {
+  			const bottom = playlist.length > 0 ? '60px' : ''
+  			this.$refs.shortcutWrapper.style.bottom = bottom
+  			this.$refs.shortcut.refresh()
+  			this.$refs.searchResult.style.bottom = bottom
+  			this.$refs.suggest.refresh()
+  		},
       showConfirm() {
       	this.$refs.confirm.show()
       },
@@ -104,7 +112,7 @@
   					this.$refs.shortcut.refresh()
   				})
   			}
-  		}        
+  		}
   	}
 }
 </script>
