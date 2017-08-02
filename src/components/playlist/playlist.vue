@@ -12,11 +12,18 @@
         <scroll ref="listContent" :data="sequenceList" class="list-content" :refreshDelay="refreshDelay">
           <transition-group ref="list" name="list" tag="ul">
             <li :key="item.id" class="item" v-for="(item,index) in sequenceList"
-                @click="selectItem(item,index)">
-              <i class="current" :class="getCurrentIcon(item)"></i>
-              <span class="text">{{item.name}}</span>
-              <span @click.stop="toggleFavorite(item)" class="like">
-                <i :class="getFavoriteIcon(item)"></i>
+               @click="selectItem(item, index)">
+              <span class="current" :class="getCurrentIcon(item)">
+                <b>
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                </b>
+              </span>
+              <span class="text" :class="currentHeight(item)">{{item.name}}-{{item.singer}}</span>
+              <span class="like">
+                <i></i>
               </span>
               <span @click.stop="deleteOne(item)" class="delete">
                 <i class="icon-delete"></i>
@@ -35,17 +42,15 @@
         </div>
       </div>
       <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
-      <add-song ref="addSong"></add-song>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapActions} from 'vuex'
+  import {mapActions,mapGetters,mapMutations} from 'vuex'
   import {playMode} from 'common/js/config'
   import Scroll from 'base/scroll/scroll'
   import Confirm from 'base/confirm/confirm'
-  import AddSong from 'components/add-song/add-song'
   import {playerMixin} from 'common/js/mixin'
 
   export default {
@@ -59,7 +64,14 @@
     computed: {
       modeText() {
         return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
-      }
+      },
+      ...mapGetters([
+          'sequenceList',
+          'currentSong',
+          'playList',
+          'mode',
+          'playing'
+        ])
     },
     methods: {
       show() {
@@ -80,14 +92,20 @@
         this.hide()
       },
       getCurrentIcon(item) {
-        if (this.currentSong.id === item.id) {
+        if (this.currentSong.id === item.id && this.playing) {
           return 'icon-play'
         }
         return ''
       },
+      currentHeight(item) {
+        if (this.currentSong.id === item.id) {
+          return 'current-height'
+        }
+          return ''
+      },
       selectItem(item, index) {
         if (this.mode === playMode.random) {
-          index = this.playlist.findIndex((song) => {
+          index = this.playList.findIndex((song) => {
             return song.id === item.id
           })
         }
@@ -102,17 +120,21 @@
       },
       deleteOne(item) {
         this.deleteSong(item)
-        if (!this.playlist.length) {
+        if (!this.playList.length) {
           this.hide()
         }
       },
       addSong() {
         this.$refs.addSong.show()
       },
-      ...mapActions([
-        'deleteSong',
-        'deleteSongList'
-      ])
+      // ...mapActions([
+      //   'deleteSong',
+      //   'deleteSongList'
+      // ]),
+      ...mapMutations({
+          setCurrentIndex: 'SET_CURRENT_INDEX',
+          setPlayingState: 'SET_PLAYING_STATE'
+      }) 
     },
     watch: {
       currentSong(newSong, oldSong) {
@@ -126,8 +148,7 @@
     },
     components: {
       Scroll,
-      Confirm,
-      AddSong
+      Confirm
     }
   }
 </script>
@@ -158,7 +179,7 @@
       left: 0
       bottom: 0
       width: 100%
-      background-color: $color-highlight-background
+      background-color: $color-background-h
       .list-header
         position: relative
         padding: 20px 30px 10px 20px
@@ -167,8 +188,8 @@
           align-items: center
           .icon
             margin-right: 10px
-            font-size: 30px
-            color: $color-theme-d
+            font-size: 20px
+            color: $color-theme
           .text
             flex: 1
             font-size: $font-size-medium
@@ -195,12 +216,41 @@
             flex: 0 0 20px
             width: 20px
             font-size: $font-size-small
-            color: $color-theme-d
+            color: $color-theme
+          .icon-playing
+            b
+              display: block;
+              width: 12px;
+              height: 11px;
+              overflow: hidden;
+              pointer-events: none;
+              -webkit-transform-style: preserve-3d;
+              i
+                float: left;
+                width: 1px;
+                height: 11px;
+                margin-right: 2px;
+                background-color: $color-theme
+                animation-name: bounce;
+                animation-timing-function: ease-in-out;
+                animation-fill-mode: forwards;
+                animation-iteration-count: infinite;
+                animation-direction: alternate;
+              i:nth-of-type(1)
+                animation-duration: 400ms;
+              i:nth-of-type(2)
+                animation-duration: 600ms;
+              i:nth-of-type(3)
+                animation-duration: 700ms;
+              i:nth-of-type(4)
+                animation-duration: 500ms;
           .text
             flex: 1
             no-wrap()
             font-size: $font-size-medium
             color: $color-text-d
+          .current-height
+            color: rgba(255,255,255,0.8)
           .like
             extend-click()
             margin-right: 15px
@@ -230,7 +280,15 @@
       .list-close
         text-align: center
         line-height: 50px
-        background: $color-background
+        background: $color-background-h
         font-size: $font-size-medium-x
         color: $color-text-l
+  @keyframes bounce
+    0% {
+      transform: translate3d(0,11px,0);
+    }
+    100% {
+      transform: translate3d(0,0,0);
+    }
+    
 </style>

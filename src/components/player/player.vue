@@ -24,7 +24,7 @@
                   <img class="image" :src="currentSong.image"></img>
                 </div>
               </div>
-              <div class="playing-lyric-wrapper">
+              <div class="playing-lyric-wrapper" @click="showPlaylist">
                 <div class="playing-lyric">{{playingLyric}}</div>
               </div>
             </div>
@@ -85,12 +85,13 @@
           <div class="control">
             <i :class="miniIcon" @click.stop.prevent="togglePlaying"></i>
           </div>
-          <div class="control">
+          <div class="control" @click="showPlaylist">
             <i class="icon-playlist"></i>
           </div>
           <div class="mini-blur"></div>
         </div>
       </transition>
+      <playlist ref="playlist"></playlist>
       <audio :src='currentSong.url' ref="audio" @ended="ended" @timeupdate="updateTime" @canplay="ready" @error="error"></audio>
     </div>
 </template>
@@ -105,9 +106,10 @@
     import {shuffle} from 'common/js/util'
     import Lyric from 'lyric-parser'
     import Scroll from 'base/scroll/scroll'
+    import Playlist from 'components/playlist/playlist'
     export default{
         components: {
-          progressBar,Scroll
+          progressBar,Scroll,Playlist
         },
         created() {
           this.touch =　{}
@@ -162,27 +164,9 @@
           ])
         },
         methods: {
-          // voiceStart(e) {
-          //   this.voiceTouch.init = true
-          //   this.voiceTouch.startX = e.touches[0].pageX
-          //   this.voiceTouch.left = this.$refs.progress.clientWidth
-          // },
-          // voiceMove(e) {
-          //   if(!this.voiceTouch.init) {
-          //     return 
-          //   }
-          //   const deltaX = e.touches[0].pageX - this.voiceTouch.startX
-          //   const offsetWidth =  Math.min(this.$refs.progress.clientWidth - 12,Math.max(0,this.voiceTouch.left + deltaX))
-          //   this._offset(deltaX)
-          // },
-          // voiceEnd(e) {
-          //   this.voiceTouch.init = false
-
-          // },
-          // _offset(offsetWidth) {
-          //   // this.$refs.progress.style.width = `${offsetWidth}px`
-          //   this.$refs.voiceBtn.style[transform] = `translate3d(${offsetWidth}px,0,0)`
-          // },
+          showPlaylist() {
+            this.$refs.playlist.show()
+          },
           middleTouchStart(e) {
             this.touch.initiated = true
             const touch = e.touches[0]
