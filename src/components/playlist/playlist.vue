@@ -5,7 +5,7 @@
         <div class="list-header">
           <h1 class="title">
             <i class="icon" :class="iconMode" @click="changeMode"></i>
-            <span class="text">{{modeText}}</span>
+            <span class="text">{{modeText}}<span v-show="mode !== 1">({{songSize}})</span></span>
             <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
@@ -21,7 +21,7 @@
                   <i></i>
                 </b>
               </span>
-              <span class="text" :class="currentHeight(item)">{{item.name}}-{{item.singer}}</span>
+              <span class="text" :class="currentHeight(item)">{{item.name}}<i class="singer">-{{item.singer}}</i></span>
               <span class="like">
                 <i></i>
               </span>
@@ -58,12 +58,15 @@
     data() {
       return {
         showFlag: false,
-        refreshDelay: 120
+        refreshDelay: 120,
       }
     },
     computed: {
       modeText() {
         return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
+      },
+      songSize() {
+        return this.playList.length
       },
       ...mapGetters([
           'sequenceList',
@@ -194,6 +197,7 @@
             flex: 1
             font-size: $font-size-medium
             color: $color-text-l
+            
           .clear
             extend-click()
             .icon-clear
@@ -248,7 +252,11 @@
             flex: 1
             no-wrap()
             font-size: $font-size-medium
-            color: $color-text-d
+            color: $color-text-l
+            .singer
+              font-size: $font-size-small
+              color: $color-text-d
+              font-style: normal
           .current-height
             color: rgba(255,255,255,0.8)
           .like
@@ -260,11 +268,11 @@
               color: $color-sub-theme
           .delete
             extend-click()
-            font-size: $font-size-small
-            color: $color-theme
+            font-size: $font-size-small-s
+            color: $color-text-d
       .list-operate
         width: 140px
-        margin: 20px auto 30px auto
+        margin: 10px auto 10px auto
         .add
           display: flex
           align-items: center
