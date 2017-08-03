@@ -1,7 +1,7 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input ref="query" v-model="query" class="box" :placeholder="placeholder"/>
+    <input ref="query" v-model="query" class="box" :placeholder="placeholder" @focus="onfoucus" @blur="onblur"/>
     <i @click="clear" v-show="query" class="icon-dismiss"></i>
   </div>
 </template>
@@ -22,6 +22,12 @@
       }
     },
     methods: {
+      onblur() {
+        this.$refs.query.style.textAlign = 'center'
+      },
+      onfoucus() {
+        this.$refs.query.style.textAlign = 'left'
+      },
       clear() {
         this.query = ''
       },
@@ -32,7 +38,8 @@
         this.$refs.query.blur()
       }
     },
-    created() {
+
+    created() {      
       this.$watch('query', debounce((newQuery) => {
         this.$emit('query', newQuery)
       }, 200))
@@ -58,11 +65,13 @@
     .box
       flex: 1
       margin: 0 5px
+      text-align: center
       line-height: 18px
       background: $color-highlight-background
       color: $color-text
       font-size: $font-size-medium
       outline:none
+      transition: all 0.3s ease-out 
       &::placeholder
         color: $color-text-d
     .icon-dismiss
