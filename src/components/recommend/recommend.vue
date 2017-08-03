@@ -1,6 +1,8 @@
 <template> 
     <div class="recommend" ref="recommend">
-        <scroll ref="scroll" class="recommend-content" :data="discList">
+        <loading v-show="fresh" title=""></loading>
+        <span v-show="!fresh" class="refresh">下拉刷新</span>
+        <scroll ref="scroll" class="recommend-content" :data="discList" :pulldown="pulldown" @scrollToEnd="refresh"> 
             <div>
                 <div v-if="recommend.length" class="slider-wrapper">
                     <slider>
@@ -45,9 +47,11 @@
         mixins: [playlistMixin],
         data(){
             return {
+                fresh: false,
                 recommend: [],
                 discList: [],
-                title: '正在加载...'
+                title: '正在加载...',
+                pulldown: true                
             }
         },
         components:{
@@ -58,6 +62,15 @@
             this._getDiscList()
         },
         methods: {
+            refresh() {
+                this.fresh = true
+                this.discList = []
+                getDiscList().then((res) => {
+                    if(res.code === ERR_OK){
+                        this.discList = res.data.list
+                    }
+                })
+            },
             handlePlaylist(playlist) {
                 const bottom = playlist.length > 0 ? '60px' : '' 
                 this.$refs.recommend.style.bottom = bottom
@@ -99,6 +112,13 @@
             ...mapMutations ({
                 setDisc : 'SET_DISC'
             })
+        },
+        watch: {
+            discList(newList) {
+                if(newList.length > 0) {
+                    this.fresh = false
+                } 
+            }
         }
     }
 </script>
@@ -109,6 +129,13 @@
         width: 100%
         top: 88px
         bottom: 0
+        .refresh
+            position: absolute
+            font-size: $font-size-medium
+            color: $color-text-d
+            width: 100%
+            text-align: center
+            top: 10px
         .recommend-content
             height: 100%
             overflow: hidden

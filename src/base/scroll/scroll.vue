@@ -30,6 +30,10 @@
             beforeScroll: {
                 type: Boolean,
                 default: false
+            },
+            pulldown: {
+                type: Boolean,
+                default: false
             }
         },
         mounted() {
@@ -57,14 +61,19 @@
                     this.scroll.on('scrollEnd', () => {
                         if(this.scroll.y <= (this.scroll.maxScrollY + 50)) {
                             this.$emit('scrollToEnd') 
-                            console.log(this.scroll)
-
                         }
                     })
                 }
                 if(this.beforeScroll) {
                     this.scroll.on('beforeScrollStart',() => {
                         this.$emit('beforeScroll')
+                    })
+                }
+                if(this.pulldown) {
+                    this.scroll.on('touchend', () => {
+                        if(this.scroll.y > 30) {
+                            this.$emit('scrollToEnd')
+                        }
                     })
                 }
             },
