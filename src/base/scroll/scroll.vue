@@ -39,7 +39,13 @@
         mounted() {
             setTimeout(() => {
                 this._initScroll()
+                if(this.pulldown) {
+                        this.scroll.on('scroll', () => {
+                        this.$emit('scrollY', this.scroll.y)
+                    })
+                }
             }, 20)
+            
         },
         methods: {
             _initScroll() {
@@ -71,7 +77,8 @@
                 }
                 if(this.pulldown) {
                     this.scroll.on('touchend', () => {
-                        if(this.scroll.y > 30) {
+
+                        if(this.scroll.y > 60) {
                             this.$emit('scrollToEnd')
                         }
                     })

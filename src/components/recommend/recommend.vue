@@ -1,8 +1,8 @@
 <template> 
     <div class="recommend" ref="recommend">
-        <loading v-show="fresh" title=""></loading>
-        <span v-show="!fresh" class="refresh">下拉刷新</span>
-        <scroll ref="scroll" class="recommend-content" :data="discList" :pulldown="pulldown" @scrollToEnd="refresh"> 
+        <loading v-show="fresh" title="正在加载"></loading>
+        <circle-progress class="refresh" :yPercent="yPercent" v-show="!fresh" :fresh="fresh"></circle-progress>
+        <scroll ref="scroll" class="recommend-content" :data="discList" :pulldown="pulldown" @scrollToEnd="refresh" :probeType="probeType" @scrollY="scrollY"> 
             <div>
                 <div v-if="recommend.length" class="slider-wrapper">
                     <slider>
@@ -39,6 +39,7 @@
     import loading from 'base/loading/loading'
     import Scroll from 'base/scroll/scroll'
     import slider from 'base/slider/slider'
+    import circleProgress from 'base/circle-progress/circle-progress'
     import {getRecommend,getDiscList} from 'api/recommend'
     import {ERR_OK} from 'api/config'
     import {playlistMixin} from 'common/js/mixin'
@@ -51,17 +52,27 @@
                 recommend: [],
                 discList: [],
                 title: '正在加载...',
-                pulldown: true                
+                pulldown: true,
+                yPercent: 0              
             }
         },
         components:{
-            slider,Scroll,loading
+            slider,Scroll,loading,circleProgress
         },
         created() {
+            this.probeType = 2
             this._getRecommend()
             this._getDiscList()
         },
+        mounted() {
+            
+        },
         methods: {
+            scrollY(y) {
+                if(y <= 60) {
+                    this.yPercent = y / 60
+                }
+            },
             refresh() {
                 this.fresh = true
                 this.discList = []
@@ -90,6 +101,7 @@
                 this.$refs.list[index].style.backgroundColor = ''
             },
             _getRecommend(){
+                
                 getRecommend().then((res) => {
                     if(res.code === ERR_OK){
                         this.recommend = res.data.slider
@@ -116,7 +128,10 @@
         watch: {
             discList(newList) {
                 if(newList.length > 0) {
-                    this.fresh = false
+                    setTimeout(() => {
+                        this.fresh = false
+                    },200)
+                    
                 } 
             }
         }
@@ -124,19 +139,23 @@
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
     @import "~common/stylus/variable"
-    .recommend
+    .recommend 
         position: fixed
         width: 100%
         top: 88px
         bottom: 0
         .refresh
             position: absolute
+            left: 50%
             font-size: $font-size-medium
             color: $color-text-d
-            width: 100%
+            width: 26px
+            margin-left: -13px
+            height: 26px
             text-align: center
-            top: 10px
+            // top: 10px
         .recommend-content
+            
             height: 100%
             overflow: hidden
             .slider-wrapper
