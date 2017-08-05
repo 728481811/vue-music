@@ -1,5 +1,8 @@
 <template> 
     <div class="recommend" ref="recommend">
+        <transition name="isLoad">
+            <div class="isFirstLoad" v-show="isLoaded">下拉可刷新哦!!</div>
+        </transition>
         <loading v-show="fresh" title="正在加载"></loading>
         <circle-progress class="refresh" :yPercent="yPercent" v-show="!fresh" :fresh="fresh"></circle-progress>
         <scroll ref="scroll" class="recommend-content" :data="discList" :pulldown="pulldown" @scrollToEnd="refresh" :probeType="probeType" @scrollY="scrollY"> 
@@ -44,10 +47,12 @@
     import {ERR_OK} from 'api/config'
     import {playlistMixin} from 'common/js/mixin'
     import {mapMutations} from 'vuex'
+    import {isFirstLoad} from 'common/js/cache'
     export default{
         mixins: [playlistMixin],
         data(){
             return {
+                isLoaded: false,
                 fresh: false,
                 recommend: [],
                 discList: [],
@@ -63,6 +68,12 @@
             this.probeType = 2
             this._getRecommend()
             this._getDiscList()
+            if(isFirstLoad()) {
+                this.isLoaded = true
+                setTimeout(() => {
+                    this.isLoaded = false
+                }, 2000)
+            }
         },
         mounted() {
             
@@ -144,6 +155,19 @@
         width: 100%
         top: 88px
         bottom: 0
+        .isFirstLoad
+            height: 26px
+            width: 100%
+            line-height: 26px
+            font-size: $font-size-small
+            text-align: center
+            background: #fbcb6c
+            position: relative
+            z-index: -1
+            &.isLoad-enter-active, &.isLoad-leave-active
+                transition: all 0.5s ease-out
+            &.isLoad-enter, &.isLoad-leave-to  
+                transform: translate3d(0, -26px, 0)
         .refresh
             position: absolute
             left: 50%
@@ -155,7 +179,6 @@
             text-align: center
             // top: 10px
         .recommend-content
-            
             height: 100%
             overflow: hidden
             .slider-wrapper

@@ -1,5 +1,6 @@
 import storage from 'good-storage'
 const SEARCH_KEY = '__search__'
+const LOADED = '__loaded__'
 const SEARCH_MAX_LENGTH = 15
 
 function insertArray(arr, val, compare, maxLen) {
@@ -33,7 +34,9 @@ export function saveSearch(query) {
 }
 
 export function loadSearch() {
+    console.log(storage)
     return storage.get(SEARCH_KEY, [])
+
 }
 
 export function deleteSearch(query) {
@@ -48,4 +51,15 @@ export function deleteSearch(query) {
 export function clearSearch() {
     storage.remove(SEARCH_KEY)
     return []
+}
+
+export function isFirstLoad() {
+    let isLoaded = storage.get(LOADED, [])
+    if(isLoaded.length === 0) {
+        const loaded = true
+        storage.set(LOADED, loaded)
+        return true
+    } else {
+        return false
+    }
 }
