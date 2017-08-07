@@ -14,12 +14,7 @@
             <li :key="item.id" class="item" v-for="(item,index) in sequenceList"
                @click="selectItem(item, index)">
               <span class="current" :class="getCurrentIcon(item)">
-                <b>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                </b>
+                
               </span>
               <span class="text" :class="currentHeight(item)">{{item.name}}<i class="singer">-{{item.singer}}</i></span>
               <span class="like">
@@ -96,7 +91,7 @@
       },
       getCurrentIcon(item) {
         if (this.currentSong.id === item.id && this.playing) {
-          return 'icon-play'
+          return 'icon-playing'
         }
         return ''
       },
@@ -222,32 +217,9 @@
             font-size: $font-size-small
             color: $color-theme
           .icon-playing
-            b
-              display: block;
-              width: 12px;
-              height: 11px;
-              overflow: hidden;
-              pointer-events: none;
-              -webkit-transform-style: preserve-3d;
-              i
-                float: left;
-                width: 1px;
-                height: 11px;
-                margin-right: 2px;
-                background-color: $color-theme
-                animation-name: bounce;
-                animation-timing-function: ease-in-out;
-                animation-fill-mode: forwards;
-                animation-iteration-count: infinite;
-                animation-direction: alternate;
-              i:nth-of-type(1)
-                animation-duration: 400ms;
-              i:nth-of-type(2)
-                animation-duration: 600ms;
-              i:nth-of-type(3)
-                animation-duration: 700ms;
-              i:nth-of-type(4)
-                animation-duration: 500ms;
+            width: 12px
+            height: 12px
+            background: url(wave.gif) no-repeat
           .text
             flex: 1
             no-wrap()
@@ -258,7 +230,7 @@
               color: $color-text-d
               font-style: normal
           .current-height
-            color: rgba(255,255,255,0.8)
+            color: #9d2a28
           .like
             extend-click()
             margin-right: 15px

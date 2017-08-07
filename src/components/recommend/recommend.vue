@@ -163,11 +163,11 @@
             text-align: center
             background: #fbcb6c
             position: relative
-            z-index: -1
+            z-index: -2
             &.isLoad-enter-active, &.isLoad-leave-active
                 transition: all 0.5s ease-out
             &.isLoad-enter, &.isLoad-leave-to  
-                transform: translate3d(0, -26px, 0)
+                transform: translate3d(0, 26px, 0)
         .refresh
             position: absolute
             left: 50%

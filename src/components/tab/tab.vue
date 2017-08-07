@@ -26,8 +26,6 @@
         height: 44px
         line-height: 44px
         font-size: $font-size-medium
-        position: relative
-        z-index: 10
         background: #232226
         .tab-item
             flex: 1
