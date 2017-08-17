@@ -31,7 +31,7 @@
             <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
               <div class="lyric-wrapper">
                 <div v-if="currentLyric">
-                  <p  ref="lyricLine" class="text" v-for="(line,index) in currentLyric.lines" :class="{'current': currentLineNum === index}">{{line.txt}}</p>
+                  <p @click="copyL" ref="lyricLine" class="text" v-for="(line,index) in currentLyric.lines" :class="{'current': currentLineNum === index}">{{line.txt}}</p>
                 </div>
               </div>
             </scroll>
@@ -68,11 +68,14 @@
               </div>
             </div>
           </div>
+          <transition name="fade">
+            <copy-lyric v-show="copyShow" @close="close"></copy-lyric>
+          </transition>
           <transition name="modeAnimation">
             <div class="patten-tip" v-show="isMode">{{modeText}}</div>
           </transition>
         </div>
-      </transition>
+      </transition> 
       <transition name="mini">
         <div class="mini-player" v-show="!fullscreen"  @click="open">
           <div class="icon">
@@ -99,6 +102,7 @@
     import {mapMutations,mapGetters} from 'vuex'
     import animations from 'create-keyframe-animation'
     import {prefixStyle} from 'common/js/dom'
+    import copyLyric from 'base/copyLyric/copyLyric'
     import progressBar from 'base/progress-bar/progress-bar'
     const transform = prefixStyle('transform')
     const transitionDuration = prefixStyle('transitionDuration')
@@ -109,7 +113,7 @@
     import Playlist from 'components/playlist/playlist'
     export default{
         components: {
-          progressBar,Scroll,Playlist
+          progressBar,Scroll,Playlist,copyLyric
         },
         created() {
           this.touch =　{}
@@ -129,7 +133,8 @@
             playingLyric: '',
             isMode: false,
             modeText: '',
-            songInfo: {}
+            songInfo: {},
+            copyShow: false
           }
         },
         computed: {
@@ -164,6 +169,13 @@
           ])
         },
         methods: {
+          copyL() {
+            console.log(1)
+            this.copyShow = true
+          },
+          close() {
+            this.copyShow = false
+          },
           showPlaylist() {
             this.$refs.playlist.show()
           },
@@ -229,6 +241,12 @@
             this.$refs.middleL.style[transitionDuration] = `${time}ms`
             this.$refs.needle.style[transitionDuration] = `${time}ms`
             this.$refs.info.style[transitionDuration] = `${time}ms`
+            if(opacity === 0) {
+              this.$refs.needle.style.display = 'none'
+            } else {
+              this.$refs.needle.style.display = 'block'
+
+            }
           },
           ended() {
             if(this.mode === playMode.loop) {
@@ -406,6 +424,7 @@
           getLyric() {
               this.currentSong.getLyric().then((lyric) => {
               this.currentLyric = new Lyric(lyric, this.handleLyric)
+              console.log(this.currentLyric)
               if(this.playing) {
                 this.currentLyric.play()
               }
