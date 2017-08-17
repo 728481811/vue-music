@@ -31,7 +31,7 @@
             <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
               <div class="lyric-wrapper">
                 <div v-if="currentLyric">
-                  <p @click="copyL" ref="lyricLine" class="text" v-for="(line,index) in currentLyric.lines" :class="{'current': currentLineNum === index}">{{line.txt}}</p>
+                  <p ref="lyricLine" class="text" v-for="(line,index) in currentLyric.lines" :class="{'current': currentLineNum === index}">{{line.txt}}</p>
                 </div>
               </div>
             </scroll>
@@ -214,7 +214,7 @@
             let width 
             let opacity
             if(this.currentShow === 'cd') {
-              if(this.touch.percent > 0.1) {
+              if(this.touch.percent > 0.3) {
                 width = -window.innerWidth
                 opacity = 0
                 this.currentShow = 'lyric'
@@ -223,7 +223,7 @@
                 opacity = 1
               }
             } else {
-              if(this.touch.percent < 0.9) {
+              if(this.touch.percent < 0.7) {
                 width = 0
                 opacity = 1
                 this.currentShow = 'cd'
